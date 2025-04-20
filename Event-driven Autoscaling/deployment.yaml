@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-processor
+  namespace: order
+  labels:
+    app: order-processor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: order-processor
+  template:
+    metadata:
+      labels:
+        app: order-processor
+    spec:
+      serviceAccountName: keda-operator
+      containers:
+        - name: order-processor
+          image: 362708816803.dkr.ecr.ap-northeast-2.amazonaws.com/order-app:v1
+          env:
+            - name: QUEUE_URL
+              value: "https://sqs.ap-northeast-2.amazonaws.com/362708816803/order-queue"
+            - name: REGION_NAME
+              value: ap-northeast-2
+          ports:
+            - containerPort: 8080
